@@ -12,7 +12,7 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  timeout: 60000,
+  timeout: 120_000,
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -27,7 +27,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: 'https://www.buyautoparts.com',
+    //baseURL: 'https://www.buyautoparts.com',
     navigationTimeout: 60000,
     actionTimeout: 15000,
 

@@ -1,17 +1,36 @@
-import { test } from "../base/bap_base";
+import { test } from "@playwright/test";
 import { LandingPage } from "../pom/landing_pom";
-
-//import { setup, teardown, getPage } from '../base/simbli_testBase';
 
 test.describe("Bap Test Suite", () => {
 
-
     test("Bap landing page test", async ({ page, request }) => {
 
-        const landing = new LandingPage(page, request);
-        await landing.validateBapLogo();
+        const landingPage = new LandingPage(page, request);
 
+        await page.goto("https://www.buyautoparts.com/", {
+            waitUntil: "domcontentloaded",
+            timeout: 60_000,
+        });
+
+        await landingPage.landing_page();
     });
-
-
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//import { LandingPage } from "../pom/landing_pom";

@@ -5,7 +5,7 @@ export const test = base.extend({
 
         console.log("🌐 Bap");
 
-        await page.goto("/", {
+        await page.goto("https://www.buyautoparts.com/", {
             waitUntil: "domcontentloaded",
             timeout: 60_000,
         });
