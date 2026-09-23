@@ -21,16 +21,10 @@ export class LandingPage {
     }
 
     public get shippingBannerText(): Locator {
-        // Use getByText so the locator is resilient to tag changes (p → span/div).
-        // Regex match avoids brittle exact-text coupling with punctuation.
         return this.page.getByText(/Free Shipping/i).first();
     }
 
     public get shippingBanner(): Locator {
-        // Playwright chained locators only traverse DOWN the DOM.
-        // The red container is an ancestor of the <p>, so we must use a
-        // page-level locator that contains the shipping text.
-        // page.getByRole('banner') resolves to the <header> landmark element.
         return this.page.getByRole('banner');
     }
 
@@ -52,16 +46,11 @@ export class LandingPage {
         });
     }
 
-    // Stable year button locator — doesn't break when text changes from
-    // "Choose Year" to the selected year (e.g. "2007") after selection
     public get yearButton(): Locator {
         return this.page.locator('[data-select-id="tihomelandyear"]');
     }
 
     public get yearDropdown(): Locator {
-        // Use sibling combinator: ul that follows the Choose Year button div
-        // The button has data-select-id="tihomelandyear" (confirmed from DOM)
-        // The ul itself has no data-select-id, so we scope via the button sibling
         return this.page.locator(
             '[data-select-id="tihomelandyear"] ~ ul.ti-faux-select-dropdown'
         );
@@ -72,10 +61,6 @@ export class LandingPage {
             .locator("li")
             .filter({ hasText: /^2007$/ });
     }
-
-    // public get nativeYearSelect(): Locator {
-    //     return this.page.locator('select[name="sel-year"]');
-    // }
 
     public get modal(): Locator {
         return this.page.locator("#ltkpopup-container");
@@ -102,7 +87,7 @@ export class LandingPage {
 
     public get makeDropdown(): Locator {
         return this.page.locator(
-            'ul.ti-faux-select-dropdown[data-select-id="ti-home-sel-make"]'
+            '[data-select-id="ti-home-sel-make"] ~ ul.ti-faux-select-dropdown'
         );
     }
 
@@ -112,8 +97,6 @@ export class LandingPage {
 
 
     public get audiOption(): Locator {
-        // Scope through makeDropdown — getByRole listitem accessible name
-        // doesn't reliably resolve to "Audi" depending on nested HTML
         return this.makeDropdown.locator("li").filter({ hasText: /^Audi$/ });
     }
 
@@ -133,45 +116,156 @@ export class LandingPage {
         );
     }
 
-    // public async selectAudi(): Promise<void> {
-    //     const timeout = 30_000;
+    public get modelDropdownprinta4(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-button[data-select-id="ti-home-sel-model"]'
+        );
+    }
 
-    //     await expect(this.selectMake).toHaveCount(1, { timeout });
-    //     await expect(this.selectMake).toBeVisible({ timeout });
-    //     await expect(this.selectMake).toBeEnabled({ timeout });
+    public get a4Option(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-dropdown li[data-ti-value="A4_"]'
+        );
+    }
 
-    //     // Open the faux make dropdown
-    //     await this.selectMake.click();
+    public get categoryDropdownprint(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-button[data-select-id="ti-home-sel-cat"]'
+        );
+    }
 
-    //     await expect(this.selectMake).toHaveAttribute(
-    //         "aria-expanded",
-    //         "true",
-    //         { timeout }
-    //     );
+    public get acCategoryOption(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-dropdown li[data-ti-value="A/C"]'
+        );
+    }
 
-    //     // Wait until Audi is populated (loaded via AJAX after year selection)
-    //     await expect(this.audiOption).toHaveCount(1, { timeout });
-    //     await expect(this.audiOption).toBeVisible({ timeout });
+    public get categorySelect(): Locator {
+        return this.page.locator('#ti-home-sel-cat');
+    }
 
-    //     // Use native selectOption with force — same reasoning as year:
-    //     // the faux li click doesn't reliably sync the hidden native <select>
-    //     await this.nativeMakeSelect.selectOption("330", {
-    //         force: true,
-    //         timeout,
+    public get partDropdownprint(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-button[data-select-id="ti-home-sel-part"]'
+        );
+    }
+
+    public get acCompressorOption(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-dropdown li[data-ti-value="A/C Compressor"]'
+        );
+    }
+
+    public get partSelect(): Locator {
+        return this.page.locator('#ti-home-sel-part');
+    }
+
+    public get fitmentDropdownprint(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-button[data-select-id="ti-home-sel-engine"]'
+        );
+    }
+
+    public get engine20Option(): Locator {
+        return this.page.locator(
+            '.ti-faux-select-dropdown li[data-ti-value="2.0L Engine"]'
+        );
+    }
+
+    public get engineSelect(): Locator {
+        return this.page.locator('#ti-home-sel-engine');
+    }
+
+    public get goButton(): Locator {
+        return this.page.getByRole('button', { name: 'Go', exact: true });
+    }
+
+    public get resultHeader(): Locator {
+        return this.page.locator('h1.cad_header span[itemprop="name"]');
+    }
+
+    public get cartTitle(): Locator {
+        return this.page.locator('h1.checkout_maintitle');
+    }
+
+    // public get addToCartButton(): Locator {
+    //     return this.page.getByRole('button', {
+    //         name: 'Add to Cart',
+    //         exact: true
     //     });
-
-    //     await expect(this.nativeMakeSelect).toHaveValue("330", { timeout });
-
-    //     console.log("✅ Audi selected successfully");
     // }
 
+    public get addToCartButtons(): Locator {
+        return this.page.getByRole('button', {
+            name: 'Add to Cart',
+            exact: true
+        });
+    }
+
+    public get addToCartButton(): Locator {
+        return this.addToCartButtons.nth(0);
+    }
+
+    public get secondAddToCartButton(): Locator {
+        return this.addToCartButtons.nth(1);
+    }
+
+    public async registerModalHandler(): Promise<void> {
+
+        await this.page.addLocatorHandler(
+            this.page.locator('#ltkpopup-overlay'),
+            async () => {
+                await this.page.evaluate(() => {
+                    document
+                        .querySelectorAll(
+                            '#ltkpopup-container, #ltkpopup-overlay, ' +
+                            '.simpleltkmodal-container, .simpleltkmodal-overlay'
+                        )
+                        .forEach(el => el.remove());
+                });
+                console.log('🔕 Modal auto-dismissed by handler');
+            }
+        );
+        console.log('✅ Modal locator handler registered');
+    }
 
 
-    // select 3 
+    public async waitForModalThenClose(): Promise<void> {
+        try {
+            const container = this.page.locator('#ltkpopup-container');
+            // Modal loads lazily — wait up to 20 s
+            await container.waitFor({ state: 'attached', timeout: 20_000 });
+
+            // Try clicking the real close button first (cleaner — triggers site's own close logic)
+            const closeBtn = this.page.locator(
+                '#ltkpopup-container a.ltkmodal-close, ' +
+                '#ltkpopup-container .ti-sprite-close'
+            ).first();
+
+            if (await closeBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+                await closeBtn.click({ force: true });
+                await container.waitFor({ state: 'detached', timeout: 5_000 }).catch(() => { });
+                console.log('✅ Modal closed via close button');
+            } else {
+                // Fallback: remove from DOM directly
+                await this.page.evaluate(() => {
+                    document
+                        .querySelectorAll(
+                            '#ltkpopup-container, #ltkpopup-overlay, ' +
+                            '.simpleltkmodal-container, .simpleltkmodal-overlay'
+                        )
+                        .forEach(el => el.remove());
+                });
+                console.log('✅ Modal removed from DOM (fallback)');
+            }
+        } catch {
+            // Modal never appeared within 12 s — safe to proceed
+            console.log('ℹ️ No modal appeared at page load — continuing');
+        }
+    }
 
     public async closeModalIfDisplayed(): Promise<void> {
         try {
-            // Dismiss modal container and overlay from DOM to prevent pointer event intercept
             await this.page.evaluate(() => {
                 document.querySelectorAll('#ltkpopup-container, #ltkpopup-overlay, .simpleltkmodal-container, .simpleltkmodal-overlay').forEach(el => el.remove());
             });
@@ -185,105 +279,269 @@ export class LandingPage {
         return this.page.locator('select[name="sel-year"]').first();
     }
 
-    // public async selectYear2007(): Promise<void> {
-    //     const timeout = 30_000;
-
-    //     await this.closeModalIfDisplayed();
-
-    //     // Target year select that contains option 2007
-    //     const yearSelect = this.page.locator('select#sel-year, select#tihomelandyear').filter({
-    //         has: this.page.locator('option[value="2007"]')
-    //     }).first();
-
-    //     await expect(yearSelect).toBeAttached({ timeout });
-
-    //     // Select option on all year selects that have option 2007
-    //     const selects = await this.page.locator('select#sel-year, select#tihomelandyear').all();
-    //     for (const sel of selects) {
-    //         if (await sel.locator('option[value="2007"]').count() > 0) {
-    //             await sel.selectOption("2007", { force: true });
-    //             await sel.dispatchEvent("change");
-    //         }
-    //     }
-
-    //     console.log("✅ Year 2007 selected successfully");
-    // }
 
     public async selectYear2007(): Promise<void> {
         const timeout = 30_000;
 
-        await this.closeModalIfDisplayed();
-
-        // 1. Native select option selection
         const yearSelect = this.page.locator('select#sel-year, select#tihomelandyear').first();
-
-        // Web-First Assertion: Wait until the option is populated in the DOM before selecting
-        const option2007 = yearSelect.locator('option').filter({ hasText: /^2007$/ }).first();
-        await expect(option2007).toBeAttached({ timeout });
-
-        // Select option '2007' on native select
+        await expect(yearSelect.locator('option').filter({ hasText: /^2007$/ }).first()).toBeAttached({ timeout });
         await yearSelect.selectOption('2007', { force: true });
         await yearSelect.dispatchEvent('change');
         await expect(yearSelect).toHaveValue('2007', { timeout });
 
-        // 2. Interact with visible faux dropdown button if available to update UI label
-        try {
-            if (await this.yearButton.isVisible()) {
-                await this.yearButton.click();
-                await expect(this.year2007).toBeVisible({ timeout: 5000 });
-                await this.year2007.click();
-            }
-        } catch {
-            // Native select is already set
-        }
+        const fauxYearButton = this.yearDropdownprint;
+        await expect(fauxYearButton).toBeVisible({ timeout });
+        await fauxYearButton.click();
+        await expect(this.year2007).toBeVisible({ timeout: 10_000 });
+        await this.year2007.click();
 
-        console.log(
-            `✅ Native Year value: "${await yearSelect.inputValue()}"`
-        );
+        console.log(`✅ Native Year value: "${await yearSelect.inputValue()}"`);
     }
 
 
     public async selectAudi(): Promise<void> {
         const timeout = 30_000;
 
-        await this.closeModalIfDisplayed();
+        const makeSelect = this.page.locator('select#sel-make, select#ti-home-sel-make').first();
+        await expect(makeSelect.locator('option[value="330"]')).toBeAttached({ timeout });
 
-        // Target make select that contains option 330 (Audi)
-        const makeSelect = this.page.locator('select#sel-make, select#ti-home-sel-make').filter({
-            has: this.page.locator('option[value="330"]')
-        }).first();
+        const fauxMakeButton = this.makeDropdownprint;
+        await expect(fauxMakeButton).toBeVisible({ timeout });
+        await fauxMakeButton.click();
 
-        await expect(makeSelect).toBeAttached({ timeout });
-
-        // Select option on all make selects that have option 330
-        const selects = await this.page.locator('select#sel-make, select#ti-home-sel-make').all();
-        for (const sel of selects) {
-            if (await sel.locator('option[value="330"]').count() > 0) {
-                await sel.selectOption("330", { force: true });
-                await sel.dispatchEvent("change");
-            }
-        }
-
-        // Also attempt visual faux make selection if available
-        try {
-            if (await this.selectMake.isVisible()) {
-                await this.selectMake.click();
-                await expect(this.audiOption).toBeVisible({ timeout: 5000 });
-                await this.audiOption.click();
-            }
-        } catch {
-            // Native select is already set
-        }
+        await expect(this.audiOption).toBeVisible({ timeout });
+        await this.audiOption.click();
 
         console.log("✅ Audi selected successfully");
+    }
+
+    public async selectAudiA4(): Promise<void> {
+        const timeout = 30_000;
+
+        const modelSelect = this.page.locator(
+            'select#ti-home-sel-model'
+        );
+
+        await expect(modelSelect).toBeAttached({ timeout });
+
+        await expect(this.modelDropdownprinta4).toBeVisible({
+            timeout
+        });
+
+        await this.modelDropdownprinta4.click();
+
+        await expect(this.a4Option).toBeVisible({
+            timeout: 10_000
+        });
+
+        await this.a4Option.click();
+
+        await expect(modelSelect).toHaveValue('A4_', {
+            timeout: 10_000
+        });
+
+        await expect(this.modelDropdownprinta4).toHaveText('A4', {
+            timeout: 10_000
+        });
+
+        console.log('✅ Audi A4 selected successfully');
+    }
+
+    public async selectACCategory(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.categoryDropdownprint).toBeVisible({ timeout });
+
+        await this.categoryDropdownprint.click();
+
+        await expect(this.acCategoryOption).toBeVisible({
+            timeout: 10_000
+        });
+
+        await this.acCategoryOption.click();
+
+        await expect(this.categorySelect).toHaveValue('A/C', {
+            timeout: 10_000
+        });
+
+        await expect(this.categoryDropdownprint).toHaveText('A/C', {
+            timeout: 10_000
+        });
+
+        console.log('✅ A/C category selected successfully');
+    }
+
+    public async selectACCompressor(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.partDropdownprint).toBeVisible({
+            timeout
+        });
+
+        await this.partDropdownprint.click();
+
+        await expect(this.acCompressorOption).toBeVisible({
+            timeout: 10_000
+        });
+
+        await this.acCompressorOption.click();
+
+        await expect(this.partSelect).toHaveValue('A/C Compressor', {
+            timeout: 10_000
+        });
+
+        await expect(this.partDropdownprint).toHaveText('A/C Compressor', {
+            timeout: 10_000
+        });
+
+        console.log('✅ A/C Compressor selected successfully');
+    }
+
+    public async select20LEngine(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.fitmentDropdownprint).toBeVisible({
+            timeout
+        });
+
+        await this.fitmentDropdownprint.click();
+
+        await expect(this.engine20Option).toBeVisible({
+            timeout: 10_000
+        });
+
+        await this.engine20Option.click();
+
+        await expect(this.engineSelect).toHaveValue('2.0L Engine', {
+            timeout: 10_000
+        });
+
+        await expect(this.fitmentDropdownprint).toHaveText('2.0L Engine', {
+            timeout: 10_000
+        });
+
+        console.log('✅ 2.0L Engine selected successfully');
+    }
+
+    public async clickGoButton(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.goButton).toHaveCount(1, { timeout });
+        await expect(this.goButton).toBeVisible({ timeout });
+        await expect(this.goButton).toBeEnabled({ timeout });
+
+        await this.goButton.scrollIntoViewIfNeeded();
+
+        const box = await this.goButton.boundingBox();
+
+        if (!box) {
+            throw new Error('Go button is not rendered');
+        }
+
+        console.log('Go button:', box);
+
+        await this.page.mouse.move(
+            box.x + box.width / 2,
+            box.y + box.height / 2
+        );
+
+        await this.page.waitForTimeout(200);
+
+        await this.page.mouse.down();
+        await this.page.waitForTimeout(100);
+        await this.page.mouse.up();
+
+        console.log('✅ Go clicked');
+
+        await this.page.waitForTimeout(3_000);
+
+        console.log('🔗 Current URL:', this.page.url());
+
+        console.log(
+            '📄 Page heading:',
+            await this.page.locator('h1').allTextContents()
+        );
+    }
+
+    public async verifyResultPage(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.resultHeader).toBeVisible({
+            timeout
+        });
+
+        await expect(this.resultHeader).toContainText('2007 Audi A4');
+        await expect(this.resultHeader).toContainText('A/C Compressor');
+
+        const currentUrl = this.page.url();
+
+        console.log(`✅ Result page loaded`);
+        console.log(`🔗 Current URL: ${currentUrl}`);
+
+        await this.page.waitForTimeout(30_000);
+    }
+
+    public async clickAddToCart(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.addToCartButtons).toHaveCount(2, { timeout });
+
+        await expect(this.addToCartButton).toBeVisible({ timeout });
+        await expect(this.addToCartButton).toBeEnabled({ timeout });
+
+        await this.addToCartButton.scrollIntoViewIfNeeded();
+        await this.addToCartButton.click();
+
+        console.log('✅ Main Add to Cart clicked');
+    }
+
+    public async verifyCartPage(): Promise<void> {
+        const timeout = 30_000;
+
+        await expect(this.cartTitle).toHaveCount(1, { timeout });
+        await expect(this.cartTitle).toBeVisible({ timeout });
+        await expect(this.cartTitle).toContainText('YOUR');
+        await expect(this.cartTitle).toContainText('Shopping');
+        await expect(this.cartTitle).toContainText('Cart');
+
+        const currentUrl = this.page.url();
+
+        console.log('✅ Shopping Cart page loaded');
+        console.log(`🔗 Current URL: ${currentUrl}`);
+
+        await this.page.waitForTimeout(20_000);
+    }
+
+    public async verifyAddToCartButtons(): Promise<void> {
+        const timeout = 30_000;
+
+        // Verify both buttons exist
+        await expect(this.addToCartButtons).toHaveCount(2, { timeout });
+
+        await expect(this.addToCartButton).toBeAttached();
+        await expect(this.addToCartButton).toBeVisible({ timeout });
+        await expect(this.addToCartButton).toBeEnabled({ timeout });
+
+        console.log('✅ Add to Cart Button 1 is visible and enabled');
+
+        await expect(this.secondAddToCartButton).toBeAttached();
+        await expect(this.secondAddToCartButton).toBeEnabled({ timeout });
+
+        console.log('✅ Add to Cart Button 2 is attached and enabled');
+
+        // Scroll slightly so second button comes into viewport
+        await this.secondAddToCartButton.scrollIntoViewIfNeeded();
+
+        // Now verify it is visible
+        await expect(this.secondAddToCartButton).toBeVisible({ timeout });
+
+        console.log('✅ Add to Cart Button 2 is visible after scrolling');
     }
 
     public async validateShippingBanner(): Promise<void> {
         const bannerText = this.shippingBannerText;
         const banner = this.shippingBanner;
 
-        // Wait up to 30 seconds for banner to appear
-        // Note: .first() always resolves to 0 or 1 element — use toBeAttached, not toHaveCount
         await expect(bannerText).toBeAttached({
             timeout: 30_000,
         });
@@ -310,11 +568,7 @@ export class LandingPage {
         );
 
 
-        // ── Verify the banner container has the red background ──────────────────
-        // Playwright locators only traverse DOWN; to find a colored ancestor we
-        // must use evaluate() to walk UP the DOM from the <p> element.
         const bannerBgColor = await this.page.evaluate(() => {
-            // Search ALL elements (not just <p>) so the locator survives tag changes
             const source = Array.from(document.querySelectorAll('*'))
                 .find(el => el.textContent?.trim().includes('Free Shipping') &&
                     !el.children.length); // leaf node containing the text
@@ -420,20 +674,41 @@ export class LandingPage {
         console.log("🌐 BAP URL:", this.page.url());
         console.log("🌐 BAP Title:", await this.page.title());
 
+        await this.registerModalHandler();
+
+        await this.waitForModalThenClose();
+
         await this.validateBapLogo();
         await this.validateShippingBanner();
         await this.validateSelectYourVehicleHeading();
 
-        // Modal first
-        await this.closeModalIfDisplayed();
-
-        // Then Year
         await this.selectYear2007();
         console.log('Year:', await this.yearDropdownprint.innerText());
 
-        // Then Make
         await this.selectAudi();
         console.log('Make:', await this.makeDropdownprint.innerText());
+
+        await this.selectAudiA4();
+        console.log('Make a4:', await this.modelDropdownprinta4.innerText());
+
+        await this.selectACCategory();
+        console.log('Category A/C:', await this.categoryDropdownprint.innerText());
+
+        await this.selectACCompressor();
+        console.log('Part A/C Compressor:', await this.partDropdownprint.innerText());
+
+        await this.select20LEngine();
+        console.log('Fitment 20L:', await this.fitmentDropdownprint.innerText());
+
+        await this.clickGoButton();
+
+        await this.verifyResultPage();
+
+        await this.verifyAddToCartButtons();
+
+        await this.clickAddToCart();
+
+        await this.verifyCartPage();
 
 
     }
