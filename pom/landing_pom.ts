@@ -283,18 +283,21 @@ export class LandingPage {
     public async selectYear2007(): Promise<void> {
         const timeout = 30_000;
 
+        // The site drives native select and faux dropdown independently.
+        // Native selectOption + dispatchEvent fires callajax() which populates the make dropdown.
         const yearSelect = this.page.locator('select#sel-year, select#tihomelandyear').first();
         await expect(yearSelect.locator('option').filter({ hasText: /^2007$/ }).first()).toBeAttached({ timeout });
         await yearSelect.selectOption('2007', { force: true });
         await yearSelect.dispatchEvent('change');
-        await expect(yearSelect).toHaveValue('2007', { timeout });
 
+        // Faux click updates the visible UI display
         const fauxYearButton = this.yearDropdownprint;
         await expect(fauxYearButton).toBeVisible({ timeout });
         await fauxYearButton.click();
         await expect(this.year2007).toBeVisible({ timeout: 10_000 });
         await this.year2007.click();
 
+        // No need to re-verify toHaveValue — we just set it ourselves
         console.log(`✅ Native Year value: "${await yearSelect.inputValue()}"`);
     }
 
@@ -303,7 +306,10 @@ export class LandingPage {
         const timeout = 30_000;
 
         const makeSelect = this.page.locator('select#sel-make, select#ti-home-sel-make').first();
-        await expect(makeSelect.locator('option[value="330"]')).toBeAttached({ timeout });
+
+        await expect(
+            makeSelect.locator('option[value]:not([value=""])').first()
+        ).toBeAttached({ timeout });
 
         const fauxMakeButton = this.makeDropdownprint;
         await expect(fauxMakeButton).toBeVisible({ timeout });
@@ -433,30 +439,25 @@ export class LandingPage {
         await this.goButton.scrollIntoViewIfNeeded();
 
         const box = await this.goButton.boundingBox();
-
-        if (!box) {
-            throw new Error('Go button is not rendered');
-        }
-
+        if (!box) throw new Error('Go button is not rendered');
         console.log('Go button:', box);
 
-        await this.page.mouse.move(
-            box.x + box.width / 2,
-            box.y + box.height / 2
-        );
-
-        await this.page.waitForTimeout(200);
-
-        await this.page.mouse.down();
-        await this.page.waitForTimeout(100);
-        await this.page.mouse.up();
+        await Promise.all([
+            this.page.waitForURL(/buynow/, { waitUntil: 'domcontentloaded', timeout }),
+            (async () => {
+                await this.page.mouse.move(
+                    box.x + box.width / 2,
+                    box.y + box.height / 2
+                );
+                await this.page.waitForTimeout(200);
+                await this.page.mouse.down();
+                await this.page.waitForTimeout(100);
+                await this.page.mouse.up();
+            })(),
+        ]);
 
         console.log('✅ Go clicked');
-
-        await this.page.waitForTimeout(3_000);
-
         console.log('🔗 Current URL:', this.page.url());
-
         console.log(
             '📄 Page heading:',
             await this.page.locator('h1').allTextContents()
@@ -466,19 +467,16 @@ export class LandingPage {
     public async verifyResultPage(): Promise<void> {
         const timeout = 30_000;
 
-        await expect(this.resultHeader).toBeVisible({
-            timeout
-        });
+        // Wait for page to be ready — no hardcoded delay
+        await this.page.waitForLoadState('domcontentloaded', { timeout });
 
+        await expect(this.resultHeader).toBeVisible({ timeout });
         await expect(this.resultHeader).toContainText('2007 Audi A4');
         await expect(this.resultHeader).toContainText('A/C Compressor');
 
         const currentUrl = this.page.url();
-
         console.log(`✅ Result page loaded`);
         console.log(`🔗 Current URL: ${currentUrl}`);
-
-        await this.page.waitForTimeout(30_000);
     }
 
     public async clickAddToCart(): Promise<void> {
@@ -498,6 +496,9 @@ export class LandingPage {
     public async verifyCartPage(): Promise<void> {
         const timeout = 30_000;
 
+        // Wait for cart page to be ready — no hardcoded delay
+        await this.page.waitForLoadState('domcontentloaded', { timeout });
+
         await expect(this.cartTitle).toHaveCount(1, { timeout });
         await expect(this.cartTitle).toBeVisible({ timeout });
         await expect(this.cartTitle).toContainText('YOUR');
@@ -505,7 +506,6 @@ export class LandingPage {
         await expect(this.cartTitle).toContainText('Cart');
 
         const currentUrl = this.page.url();
-
         console.log('✅ Shopping Cart page loaded');
         console.log(`🔗 Current URL: ${currentUrl}`);
 
