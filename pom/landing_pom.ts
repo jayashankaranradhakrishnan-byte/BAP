@@ -509,7 +509,7 @@ export class LandingPage {
         console.log('✅ Shopping Cart page loaded');
         console.log(`🔗 Current URL: ${currentUrl}`);
 
-        await this.page.waitForTimeout(20_000);
+        await this.page.waitForTimeout(5_000);
     }
 
     public async verifyAddToCartButtons(): Promise<void> {
